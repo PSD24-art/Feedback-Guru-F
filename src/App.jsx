@@ -1,5 +1,5 @@
 import "./App.css";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Login from "./pages/login";
 import AdminDashboard from "./pages/AdminDashboard";
 import FacultyDashboard from "./pages/FacultyDashboard";
@@ -12,7 +12,8 @@ function App() {
     <>
       <Header />
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/faculty/:id" element={<FacultyDashboard />} />
         <Route path="/faculty/:id/form" element={<Subject />} />
         <Route path="/faculty/feedbackForm" element={<FeedbackForm />} />

@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import questions from "../data/questions";
 const FeedbackForm = () => {
   const [current, setCurrent] = useState(false);
   const [name, setName] = useState();
   const [roll, setRoll] = useState();
   const [token, setToken] = useState();
-
+  const navigate = useNavigate();
   const { id, subject } = useParams();
   const nameRef = useRef();
   const rollRef = useRef();
@@ -93,6 +94,7 @@ const FeedbackForm = () => {
     });
     const data = await res.json();
     console.log(data);
+    navigate("/");
   };
 
   return (
