@@ -1,29 +1,34 @@
 import useAuth from "../store/AuthProvider";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, user, logout } = useAuth();
-  console.log(isAuthenticated);
+
   let username;
   if (user) {
     username = user.username.charAt(0).toUpperCase();
   }
+
   const handlLogOut = async () => {
-    console.log("before logout");
     await logout();
-    console.log("after logout");
     navigate("/login");
   };
 
+  // Check if current path matches /faculty/:id/feedback/:subject
+  const hideButtons = /^\/faculty\/[^/]+\/feedback\/[^/]+$/.test(
+    location.pathname
+  );
+
   return (
     <>
-      <div className="fixed min-w-full h-13 flex justify-between items-center">
+      <div className="fixed min-w-full h-13 flex justify-between items-center bg-white shadow">
         <div className="p-1 h-8 flex flex-row ms-2">Logo</div>
-        {!isAuthenticated && <Navigate to="/login" replace />}
-        {user && (
+
+        {user && !hideButtons && (
           <div className="flex">
-            <div className=" flex h-10 me-4 justify-center border-2">
+            <div className="flex h-10 me-4 justify-center border-2">
               <button onClick={handlLogOut}>Logout</button>
             </div>
             <div className="w-8 flex h-10 me-2 justify-center border-2">

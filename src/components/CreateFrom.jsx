@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
 const CreateForm = ({ triggerFetch }) => {
@@ -6,6 +6,7 @@ const CreateForm = ({ triggerFetch }) => {
   const subjectRef = useRef();
   const [button, setButton] = useState(false);
   const [code, setCode] = useState("");
+  const [subjectId, setSubjectId] = useState(""); // ✅ Proper state
   const [subjects, setSubjects] = useState();
   const deptRef = useRef();
   const semRef = useRef();
@@ -15,52 +16,47 @@ const CreateForm = ({ triggerFetch }) => {
     e.preventDefault();
     const selectedCode = subjectRef.current.value;
     setCode(selectedCode);
-    let subjectId;
+
+    // ✅ Find subjectId
+    let foundSubjectId = "";
     if (subjects) {
-      const subject = subjects.find((s) => s.code === Number(selectedCode));
+      const subject = subjects.find((s) => s.unique_code === selectedCode);
       if (subject) {
-        subjectId = subject._id;
+        foundSubjectId = subject._id;
+        setSubjectId(foundSubjectId);
+        console.log("subjectID", foundSubjectId);
       }
     }
 
-    console.log(selectedCode);
-    const addFacultyToSubject = async () => {
-      const res = await fetch(`http://localhost:3420/faculties/${id}/subject`, {
-        method: "PUT",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: selectedCode }),
-      });
+    // Add faculty to subject
+    await fetch(`http://localhost:3420/faculties/${id}/subject`, {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: selectedCode }),
+    });
+    console.log("selectedCode:", selectedCode);
+    console.log("subjects:", subjects);
+    console.log("foundSubjectId:", foundSubjectId);
 
-      const data = await res.json();
-      console.log(data);
-    };
-    addFacultyToSubject();
+    // Add feedback link
+    const res = await fetch(`http://localhost:3420/faculties/${id}/feedback`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subject: foundSubjectId,
+        link: `http://localhost:5173/faculty/${id}/feedback/${selectedCode}`,
+      }),
+    });
 
-    const addLink = async () => {
-      const res = await fetch(
-        `http://localhost:3420/faculties/${id}/feedback`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            subject: subjectId,
-            link: `http://localhost:5173/faculty/${id}/feedback/${selectedCode}`,
-          }),
-        }
-      );
-      const data = await res.json();
-      if (data.message) {
-        console.log("link data: ", data.message);
-        setLinkMessage(data.message);
-      }
+    const data = await res.json();
+    if (data.message) {
+      setLinkMessage(data.message);
+    }
 
-      setButton(true);
-
-      triggerFetch();
-    };
-    addLink();
+    setButton(true);
+    triggerFetch();
   };
 
   const handleOnChange = async () => {
@@ -74,10 +70,8 @@ const CreateForm = ({ triggerFetch }) => {
 
     let url;
     if (dept && sem) {
-      // If both department & semester are selected
       url = `http://localhost:3420/faculties/${id}/subject/${dept}/${sem}`;
     } else {
-      // Only department selected
       url = `http://localhost:3420/faculties/${id}/subject/${dept}`;
     }
 
@@ -88,7 +82,6 @@ const CreateForm = ({ triggerFetch }) => {
         credentials: "include",
       });
       const data = await res.json();
-      console.log(data.subjects);
       setSubjects(data.subjects);
     } catch (err) {
       console.error("Failed to fetch subjects", err);
@@ -99,7 +92,7 @@ const CreateForm = ({ triggerFetch }) => {
     <>
       {!button ? (
         <form onSubmit={handleSubmit}>
-          <div className="flex flex-col flex-wrap ">
+          <div className="flex flex-col flex-wrap">
             <label htmlFor="department">Department</label>
             <select
               ref={deptRef}
@@ -114,6 +107,7 @@ const CreateForm = ({ triggerFetch }) => {
               <option value="ME">Mechanical Engineering</option>
               <option value="EC">Electronics and Telecommunication</option>
             </select>
+
             <label htmlFor="semester">Semester</label>
             <select
               ref={semRef}
@@ -122,7 +116,6 @@ const CreateForm = ({ triggerFetch }) => {
               defaultValue={"selectSemester"}
             >
               <option value="">Select Semester</option>
-
               <option value="01">SEM I</option>
               <option value="02">SEM II</option>
               <option value="03">SEM III</option>
@@ -132,15 +125,16 @@ const CreateForm = ({ triggerFetch }) => {
               <option value="07">SEM VII</option>
               <option value="08">SEM VIII</option>
             </select>
+
             <select id="subject" ref={subjectRef}>
               {subjects ? (
                 subjects.map((subject) => (
-                  <option key={subject._id} value={subject.code}>
+                  <option key={subject._id} value={subject.unique_code}>
                     {subject.name}
                   </option>
                 ))
               ) : (
-                <option value="No data">Select subjects</option>
+                <option value="">Select subjects</option>
               )}
             </select>
           </div>
@@ -149,13 +143,10 @@ const CreateForm = ({ triggerFetch }) => {
       ) : (
         <div className="flex flex-col flex-wrap">
           <h3>Please share the below link to get the feedback</h3>
-          <div className="break-all flex flex-wrap justify-center items-center text-wrap text-blue-700 underline break-words w-100 h-15">
+          <div className="break-all text-blue-700 underline">
             <a href={`http://localhost:5173/faculty/${id}/feedback/${code}`}>
-              {linkMessage === null ? (
-                `http://localhost:5173/faculty/${id}/feedback/${code}`
-              ) : (
-                <p>{linkMessage}</p>
-              )}
+              {linkMessage ??
+                `http://localhost:5173/faculty/${id}/feedback/${code}`}
             </a>
           </div>
         </div>

@@ -6,28 +6,35 @@ const FeedbackForm = () => {
   const [current, setCurrent] = useState(false);
   const [name, setName] = useState();
   const [roll, setRoll] = useState();
-  const [token, setToken] = useState();
+  const [token, setToken] = useState(null);
   const navigate = useNavigate();
   const { id, subject } = useParams();
   const nameRef = useRef();
   const rollRef = useRef();
+  const [answers, setAnswers] = useState({});
+
   useEffect(() => {
     const fetchToken = async () => {
-      const res = await fetch(`http://localhost:3420/faculties/${id}/tokens`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ code: subject }),
-      });
-      const data = await res.json();
-      console.log(data);
-      setToken(data.newToken.token);
-      console.log(token);
+      try {
+        const res = await fetch(
+          `http://localhost:3420/faculties/${id}/tokens/${subject}`,
+          { method: "GET", headers: { "Content-Type": "application/json" } }
+        );
+
+        const data = await res.json();
+        console.log("token data", data);
+
+        if (data?.newToken?.token) {
+          setToken(data.newToken.token);
+        } else {
+          console.warn("No token received for this subject");
+        }
+      } catch (err) {
+        console.error("Failed to fetch token", err);
+      }
     };
     fetchToken();
-  }, []);
-
-  const [answers, setAnswers] = useState({});
+  }, [id, subject]);
 
   const handleChange = (IDX, value) => {
     setAnswers((prev) => ({
@@ -53,7 +60,6 @@ const FeedbackForm = () => {
     const res = await fetch(`http://localhost:3420/feedback/${token}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
       body: JSON.stringify({
         studentName: name,
         studentRoll: roll,
@@ -94,7 +100,7 @@ const FeedbackForm = () => {
     });
     const data = await res.json();
     console.log(data);
-    navigate("/");
+    alert("Feedback submitted successfully!");
   };
 
   return (

@@ -7,6 +7,7 @@ const FacultyDashboard = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [subjects, setSubjects] = useState([]);
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     const fetchAllLinks = async () => {
@@ -20,7 +21,7 @@ const FacultyDashboard = () => {
           }
         );
         const data = await res.json();
-        console.log("Fetched from facukty dashbiard:", data.links);
+        console.log("Fetched from facultyy dashboard:", data.links);
         setSubjects(data.links);
       } catch (err) {
         console.error("Failed to fetch links", err);
@@ -49,6 +50,18 @@ const FacultyDashboard = () => {
 
   const handleOnChange = async () => {
     console.log("select option changed");
+    const subjectId = document.getElementById("linkSubject").value;
+    console.log(subjectId);
+    const res = await fetch(
+      `http://localhost:3420/faculties/${id}/count/${subjectId}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+    const data = await res.json();
+    console.log("All feedbacks", data);
+    setCount(data.FeedbackLength);
   };
 
   return (
@@ -56,22 +69,28 @@ const FacultyDashboard = () => {
       {facultyData && <h2 className="mt-15">Welcome {facultyData.name}</h2>}
       {facultyData ? (
         <div>
-          <div className="w-full h-[calc(100dvh-500px)] mb-4 flex flex-col">
+          <div className=" relative w-full h-[calc(100dvh-500px)] mb-4 flex flex-col">
             <div className="flex justify-between w-[100%]">
               Faculty Analytics
               <select
                 name=""
-                id=""
+                id="linkSubject"
                 className="h-8 me-6"
                 onChange={handleOnChange}
               >
+                <option value="Select Subject">Select Subject</option>
                 {subjects &&
                   subjects.map((link) => (
-                    <option key={link._id} value={link._id}>
+                    <option key={link._id} value={link.subject._id}>
                       {link.subject.name}
                     </option>
                   ))}
               </select>
+            </div>
+            <div className="absolute w-17 h-6 top-10">
+              <p>
+                Count: <span>{count}</span>
+              </p>
             </div>
             <div className="h-full border-amber-600 w-[100%] flex justify-center items-center">
               No Data to show
