@@ -6,12 +6,14 @@ import FacultyDashboard from "./pages/FacultyDashboard";
 import Header from "./components/Header";
 import FeedbackForm from "./pages/FeedbackForm";
 import Subject from "./components/Subject";
+import FacultyDashFromAdmin from "./pages/FacultyDashFromAdmin";
+import AddFaculty from "./pages/AddFaculty";
 
 function App() {
   return (
     <>
       <Header />
-      <Routes>
+      <Routes>    
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/faculty/:id" element={<FacultyDashboard />} />
@@ -22,7 +24,8 @@ function App() {
           element={<FeedbackForm />}
         />
         <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/"></Route>
+        <Route path="/admin/faculty/:id" element={<FacultyDashFromAdmin />} />
+        <Route path="/admin/faculty/new" element={<AddFaculty />} />
       </Routes>
     </>
   );
