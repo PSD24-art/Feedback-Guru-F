@@ -43,7 +43,7 @@ const FeedbackForm = () => {
     }));
   };
 
-  const handleStudentDataSubmit = (e) => {
+  const handleStudentDataSubmit = async (e) => {
     e.preventDefault();
     const studentName = nameRef.current.value;
     const studentroll = rollRef.current.value;
@@ -51,7 +51,21 @@ const FeedbackForm = () => {
     setName(studentName);
 
     console.log(`name: ${studentName} roll: ${studentroll}`);
-    setCurrent(true);
+
+    const res = await fetch(`http://localhost:3420/feedback/${token}/check`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        studentRoll: roll,
+      }),
+    });
+    const data = await res.json();
+    console.log(data);
+    if (data.message) {
+      setCurrent(true);
+    } else {
+      alert("You response has been already shared");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -101,40 +115,73 @@ const FeedbackForm = () => {
     const data = await res.json();
     console.log(data);
     alert("Feedback submitted successfully!");
+    navigate("/feedback/sent");
   };
 
   return (
-    <div className="mt-15">
+    <div className="mt-12 max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
       {!current ? (
-        <form onSubmit={handleStudentDataSubmit}>
+        <form onSubmit={handleStudentDataSubmit} className="space-y-6">
           <div>
-            <p>Student Name:</p>
-            <input type="text" ref={nameRef} id="" required />
+            <label className="block text-gray-700 font-medium mb-2">
+              Student Name:
+            </label>
+            <input
+              type="text"
+              ref={nameRef}
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
+
           <div>
-            <p>Student Roll:</p>
-            <input type="text" ref={rollRef} id="" required />
+            <label className="block text-gray-700 font-medium mb-2">
+              Student Roll:
+            </label>
+            <input
+              type="text"
+              ref={rollRef}
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
-          <button type="submit">Next</button>
+
+          <button
+            type="submit"
+            className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md"
+          >
+            Next
+          </button>
         </form>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-6 p-4">
+        <form onSubmit={handleSubmit} className="space-y-8">
           {questions.map((question, IDX) => (
-            <div key={IDX} className="space-y-2">
-              <p className="font-medium">{question}</p>
-              <div className="flex space-x-4">
+            <div
+              key={IDX}
+              className="space-y-4 p-4 border rounded-lg bg-gray-50 shadow-sm"
+            >
+              <p className="font-semibold text-gray-800">{question}</p>
+              <div className="flex flex-wrap gap-4">
                 {[1, 2, 3, 4, 5].map((num) => (
-                  <label key={num} className="flex flex-col items-center">
+                  <label
+                    key={num}
+                    className={`flex flex-col items-center px-3 py-2 rounded-lg cursor-pointer border transition
+                    ${
+                      answers[IDX] === num
+                        ? "bg-blue-600 text-white border-blue-600 shadow-md"
+                        : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
+                    }`}
+                  >
                     <input
-                      required
                       type="radio"
+                      required
                       name={`question-${IDX}`}
                       value={num}
                       checked={answers[IDX] === num}
                       onChange={() => handleChange(IDX, num)}
+                      className="hidden"
                     />
-                    <span>
-                      {" "}
+                    <span className="font-medium">
                       {num === 1
                         ? "Strongly Disagree"
                         : num === 2
@@ -153,7 +200,7 @@ const FeedbackForm = () => {
 
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded"
+            className="w-full py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition shadow-md"
           >
             Submit
           </button>

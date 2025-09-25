@@ -1,5 +1,6 @@
 import useAuth from "../store/AuthProvider";
 import { useNavigate, useLocation } from "react-router-dom";
+import { LogOut } from "lucide-react";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -12,6 +13,8 @@ const Header = () => {
   }
 
   const handlLogOut = async () => {
+    const confirmed = confirm("Are you sure want to log out");
+    if (!confirmed) return;
     await logout();
     navigate("/login");
   };
@@ -23,15 +26,22 @@ const Header = () => {
 
   return (
     <>
-      <div className="fixed min-w-full h-13 flex justify-between items-center bg-white shadow">
-        <div className="p-1 h-8 flex flex-row ms-2">Logo</div>
+      <div className="bg-orange-400 fixed top-0 min-w-full h-15 flex justify-between items-center shadow">
+        <div className="text-3xl text-black p-1 flex flex-row ms-2 great-vibes-regular">
+          feedback_guru
+        </div>
 
         {user && !hideButtons && (
           <div className="flex">
-            <div className="flex h-10 me-4 justify-center border-2">
-              <button onClick={handlLogOut}>Logout</button>
-            </div>
-            <div className="w-8 flex h-10 me-2 justify-center border-2">
+            <button
+              onClick={handlLogOut}
+              className="flex items-center gap-2 h-10 me-4 justify-center px-4 text-white font-semibold rounded-lg shadow-md active:scale-95 bg-orange-600 hover:bg-orange-700 transition duration-200"
+            >
+              Logout
+              <LogOut className="w-5 h-5" />
+            </button>
+
+            <div className="w-10 text-2xl flex h-10 me-2 justify-center items-center rounded-full transition duration-200 text-white shadow-lg bg-pink-500">
               <button>{username}</button>
             </div>
           </div>

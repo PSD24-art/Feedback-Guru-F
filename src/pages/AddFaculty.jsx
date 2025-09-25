@@ -1,12 +1,21 @@
 import { useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 const AddFaculty = () => {
+  const { id } = useParams();
+  const nameRef = useRef();
+  const emailRef = useRef();
+  const deptRef = useRef();
+  const navigate = useNavigate();
   const handleOnSubmit = async (e) => {
     e.preventDefault();
     const name = nameRef.current.value;
     const email = emailRef.current.value;
     const department = deptRef.current.value;
-    confirm(`You are going to add ${name} in database, click ok to confirm`);
+    const confirmed = confirm(
+      `You are going to add ${name} in database, click ok to confirm`
+    );
+    if (!confirmed) return;
     const res = await fetch("http://localhost:3420/admin/faculties/new", {
       method: "POST",
       credentials: "include",
@@ -16,10 +25,10 @@ const AddFaculty = () => {
 
     const data = await res.json();
     console.log(data);
+    alert("Fsculty added successfully");
+    navigate(`/admin/${id}`);
   };
-  const nameRef = useRef();
-  const emailRef = useRef();
-  const deptRef = useRef();
+
   return (
     <div className="mt-15">
       <form onSubmit={handleOnSubmit}>

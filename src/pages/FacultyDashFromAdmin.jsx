@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const FacultyDashFromAdmin = () => {
-  const { id, subject } = useParams();
+  const { id, facultyId, subject } = useParams();
   const [count, setCount] = useState();
   console.log(id);
   const [facultyData, setFacultyData] = useState();
@@ -11,11 +11,14 @@ const FacultyDashFromAdmin = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const fetchFaculty = async () => {
-      const res = await fetch(`http://localhost:3420/admin/faculties/${id}`, {
-        method: "GET",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await fetch(
+        `http://localhost:3420/admin/faculties/${facultyId}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       const data = await res.json();
       console.log("Individual Faculty: ", data);
       setFacultyData(data.faculty);
@@ -27,7 +30,7 @@ const FacultyDashFromAdmin = () => {
     const fetchAllLinks = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3420/admin/faculties/${id}/links`,
+          `http://localhost:3420/admin/faculties/${facultyId}/links`,
           {
             method: "GET",
             credentials: "include",
@@ -51,7 +54,7 @@ const FacultyDashFromAdmin = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:3420/admin/faculties/${id}/feedback/${subjectId}`,
+        `http://localhost:3420/admin/faculties/${facultyId}/feedback/${subjectId}`,
         {
           method: "GET",
           credentials: "include",
@@ -67,7 +70,8 @@ const FacultyDashFromAdmin = () => {
   };
 
   const handleDeleteFaculty = async () => {
-    confirm("Really want to delete the faculty");
+    const confirmed = confirm("Really want to delete the faculty");
+    if (!confirmed) return;
     const res = await fetch(`http://localhost:3420/admin/faculties/${id}`, {
       method: "DELETE",
       credentials: "include",
@@ -75,21 +79,29 @@ const FacultyDashFromAdmin = () => {
     });
     const data = await res.json();
     alert(data.message);
-    navigate("/admin");
+    navigate(`/admin/${id}`);
   };
   return (
     <>
-      {facultyData && <h2 className="mt-15">{facultyData.name}</h2>}
+      {facultyData && (
+        <h2 className="mt-6 text-2xl font-cursive text-orange-600 font-bold text-center">
+          {facultyData.name}
+        </h2>
+      )}
+
       {facultyData ? (
-        <div className="">
-          <div className=" relative w-full h-[calc(100dvh-500px)] mb-4 flex flex-col">
-            <div className="flex justify-between w-[100%]">
-              Faculty Analytics
+        <div className="space-y-6 p-3 sm:p-0">
+          {/* Faculty Analytics Card */}
+          <div className="relative w-full min-h-[200px] sm:h-[calc(100dvh-500px)] mb-4 flex flex-col bg-white border-2 border-orange-200 rounded-lg shadow-md p-3 sm:p-4">
+            {/* Header with dropdown */}
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-3 gap-3">
+              <h2 className="text-lg sm:text-xl font-semibold text-orange-600">
+                Faculty Analytics
+              </h2>
               <select
-                name=""
                 id="linkSubject"
-                className="h-8 me-6"
                 onChange={handleOnChange}
+                className="h-9 px-3 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-300 focus:border-orange-500 outline-none w-full sm:w-auto"
               >
                 <option value="Select Subject">Select Subject</option>
                 {subjects &&
@@ -100,22 +112,47 @@ const FacultyDashFromAdmin = () => {
                   ))}
               </select>
             </div>
-            <div className="absolute w-17 h-6 top-10">
-              <p>
-                Count: <span>{count}</span>
-              </p>
+
+            {/* Count Badge (absolute for desktop, inline for mobile) */}
+            {/* Mobile inline */}
+            <div className="sm:hidden mb-3 bg-orange-100 text-orange-700 font-medium px-3 py-1 rounded-lg shadow-sm w-fit">
+              Count: <span>{count}</span>
             </div>
-            <div className="h-full border-amber-600 w-[100%] flex justify-center items-center">
+            {/* Desktop absolute */}
+            <div className="hidden sm:block absolute top-12 left-4 bg-orange-100 text-orange-700 font-medium px-3 py-1 rounded-lg shadow-sm">
+              Count: <span>{count}</span>
+            </div>
+
+            {/* Analytics Data Section */}
+            <div className="flex justify-center items-center flex-1 border-2 border-orange-300 rounded-lg bg-orange-50 text-gray-600 font-medium">
               No Data to show
             </div>
           </div>
-          <div className="p-2">
-            <p className="mt-2">{facultyData.name}</p>
-            <p className="mt-2">{facultyData.department}</p>
-            <p className="mt-2">{facultyData.email}</p>
+
+          {/* Faculty Details Card */}
+          <div className="bg-white border-2 border-orange-200 rounded-lg shadow-md p-4">
+            <p className="mt-2 text-gray-800">
+              <span className="font-semibold text-orange-600">Name:</span>{" "}
+              {facultyData.name}
+            </p>
+            <p className="mt-2 text-gray-800">
+              <span className="font-semibold text-orange-600">Department:</span>{" "}
+              {facultyData.department}
+            </p>
+            <p className="mt-2 text-gray-800">
+              <span className="font-semibold text-orange-600">Email:</span>{" "}
+              {facultyData.email}
+            </p>
           </div>
-          <div>
-            <button onClick={handleDeleteFaculty}>Delete Faculty</button>
+
+          {/* Delete Button */}
+          <div className="flex justify-center">
+            <button
+              onClick={handleDeleteFaculty}
+              className="bg-red-500 text-white font-semibold py-2 px-6 rounded-lg shadow-md hover:bg-red-600 transition active:scale-95"
+            >
+              Delete Faculty
+            </button>
           </div>
         </div>
       ) : null}

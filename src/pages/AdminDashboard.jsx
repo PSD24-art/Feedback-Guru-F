@@ -1,59 +1,93 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 const AdminDashboard = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
   const [facultyList, setFacultyList] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch("http://localhost:3420/admin", {
+      const res = await fetch(`http://localhost:3420/admin/${id}`, {
         method: "GET",
         credentials: "include",
       });
       const data = await res.json();
       setFacultyList(data.allFaculties);
-      console.log(data.allFaculties);
+      console.log(data);
+      if (!data.admin.isPasswordSet) {
+        navigate(`/change-password/${id}`);
+      }
     };
     fetchData();
   }, []);
 
-  const handleOnClick = (id) => {
+  const handleOnClick = (facultyId) => {
     console.log("Clicked Faculty");
-    navigate(`/admin/faculty/${id}`);
+    navigate(`/admin/${id}/faculty/${facultyId}`);
   };
 
   const handleAddFacultyClick = async () => {
     console.log("Clicked Add faculty");
-    navigate("/admin/faculty/new");
+    navigate(`/admin/${id}/faculty/new`);
   };
   return (
     <>
-      <div className="mt-15">
-        <h2>Welcome to Admin Dash</h2>
-        {/*Add filter for department wise faculties later*/}
-        <div className="flex flex-col">
-          <div>
-            <label htmlFor="dept">Department: </label>
-            <select name="" id="dept">
-              <option value="">Select Dpartment</option>
-              <option value="CS">Computer Science</option>
-            </select>
-          </div>
-          <br />
-          <ul>
-            {facultyList.map((faculty) => (
-              <li key={faculty._id} onClick={() => handleOnClick(faculty._id)}>
-                <div>
-                  {faculty.name} <br /> {faculty.username} <br />
-                  {faculty.department}
-                </div>
-                <br />
-              </li>
-            ))}
-          </ul>
+      <div className="mt-10 p-6">
+        {/* Title */}
+        <h2 className="text-xl mt-3 font-cursive text-center pb-2 text-orange-600 font-bold mb-6 border-b-2">
+          Welcome to Admin Dashboard
+        </h2>
+
+        {/* Department Filter */}
+        <div className="items-center mb-6">
+          <select
+            id="dept"
+            className="border-2 border-orange-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-300 focus:border-orange-500 outline-none"
+          >
+            <option value=" ">Select Department</option>
+            <option value="CS">Computer Science</option>
+          </select>
         </div>
+
+        {/* Faculty List */}
+        <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 mb-8">
+          {facultyList.map((faculty) => (
+            <li
+              key={faculty._id}
+              className="bg-white border-2 border-orange-200 rounded-lg shadow-md p-4 flex items-center justify-between hover:shadow-lg hover:border-orange-400 transition"
+            >
+              {/* Faculty Info */}
+              <div className="text-gray-800">
+                <p className="font-semibold text-lg text-orange-600">
+                  {faculty.name}
+                </p>
+                <p className="text-sm text-gray-600">{faculty.username}</p>
+                <p className="text-sm font-medium text-gray-700">
+                  {faculty.department}
+                </p>
+              </div>
+
+              {/* Action Button */}
+              <button
+                onClick={() => handleOnClick(faculty._id)}
+                className="flex hover:bg-gray-100 rounded-e-xl h-full justify-center items-center text-orange-500 hover:text-orange-700 transition"
+                title="View Faculty"
+              >
+                <ArrowRight className="w-6 h-6" />
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        {/* Add Faculty Button */}
         <div className="flex justify-center">
-          <button onClick={handleAddFacultyClick}>Add Faculty</button>
+          <button
+            onClick={handleAddFacultyClick}
+            className="bg-orange-500 text-white font-semibold py-2 px-6 rounded-lg shadow-md hover:bg-orange-600 transition"
+          >
+            Add Faculty
+          </button>
         </div>
       </div>
     </>

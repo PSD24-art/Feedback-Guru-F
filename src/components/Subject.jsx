@@ -33,6 +33,8 @@ const Subject = () => {
   }, [shouldFetch]);
 
   const handleDelete = async (link) => {
+    const confirmed = confirm("Are you sure want to delete this form");
+    if (!confirmed) return;
     const res = await fetch(
       `http://localhost:3420/faculties/${id}/feedback/${link}`,
       {
@@ -48,33 +50,103 @@ const Subject = () => {
 
   return (
     <>
-      <div className="mt-15 flex  flex-wrap">All Subjects</div>
-      {feedbackLinks &&
-        feedbackLinks.map((linkObj) => (
-          <div key={linkObj._id}>
-            <p>{linkObj.subject?.name}</p>
-            <p>{linkObj.link}</p>
-            <button onClick={() => handleDelete(linkObj._id)}>Delete</button>
-          </div>
-        ))}
+      <div className="ps-2 pe-2">
+        <div className="mt-16 mb-4 text-xl font-semibold text-orange-600">
+          All Created Links
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
+          {feedbackLinks &&
+            feedbackLinks.map((linkObj) => (
+              <div
+                key={linkObj._id}
+                className="bg-white border-2 border-orange-200 rounded-lg shadow-md p-4 hover:shadow-lg hover:border-orange-400 transition flex flex-col"
+              >
+                {/* Subject Name */}
+                <p className="text-lg font-semibold text-gray-800 mb-1">
+                  {linkObj.subject?.name}
+                </p>
 
-      {clickValue === "AddSubject" && clickValue !== null ? (
-        <AddSubject />
-      ) : null}
-      {clickValue === "CreateForm" && clickValue !== null ? (
-        <CreateForm triggerFetch={() => setShouldFetch((prev) => !prev)} />
-      ) : null}
-      <div className="flex p-2 justify-evenly">
-        <button onClick={() => setClickValue("AddSubject")}>Add Subject</button>
-        <button onClick={() => setClickValue("CreateForm")}>Create form</button>
-        <button onClick={() => setClickValue(null)}>Collapse</button>
-        <button
-          onClick={() => {
-            navigate(`/faculty/${id}`);
-          }}
-        >
-          Back
-        </button>
+                {/* Link Section */}
+                <a
+                  href={linkObj.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block truncate max-w-[250px] text-sm text-blue-600 underline mb-3 hover:text-blue-800"
+                  title={linkObj.link}
+                >
+                  {linkObj.link}
+                </a>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleDelete(linkObj._id)}
+                    className="hover:cursor-pointer px-3 py-1 bg-red-100 text-red-600 rounded-md text-sm hover:bg-red-200 transition"
+                  >
+                    Delete
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(linkObj.link);
+                      alert("Link copied to clipboard!");
+                    }}
+                    className="hover:cursor-pointer px-3 py-1 bg-orange-100 text-orange-600 rounded-md text-sm hover:bg-orange-200 transition"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            ))}
+        </div>
+
+        {clickValue === "AddSubject" && (
+          <div className="relative bg-white border-2 border-orange-200 rounded-lg shadow-md p-4 mb-6">
+            {/* Close Button */}
+            <button
+              onClick={() => setClickValue(null)}
+              className="absolute top-0 right-2 text-2xl text-gray-500 hover:text-red-500 transition"
+              title="Close"
+            >
+              ✕
+            </button>
+            <AddSubject />
+          </div>
+        )}
+
+        {clickValue === "CreateForm" && (
+          <div className="relative bg-white border-2 border-orange-200 rounded-lg shadow-md p-4 pt-8 mb-6">
+            {/* Close Button */}
+            <button
+              onClick={() => setClickValue(null)}
+              className="absolute top-0 right-2 text-gray-500 text-2xl mt-0 hover:text-red-500 transition"
+              title="Close"
+            >
+              ✕
+            </button>
+            <CreateForm triggerFetch={() => setShouldFetch((prev) => !prev)} />
+          </div>
+        )}
+
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <button
+            onClick={() => setClickValue("AddSubject")}
+            className="px-4 py-2 rounded-lg bg-orange-500 text-white font-medium hover:bg-orange-600 transition"
+          >
+            Add Subject
+          </button>
+          <button
+            onClick={() => setClickValue("CreateForm")}
+            className="px-4 py-2 rounded-lg bg-orange-500 text-white font-medium hover:bg-orange-600 transition"
+          >
+            Create Form
+          </button>
+          <button
+            onClick={() => navigate(`/faculty/${id}`)}
+            className="px-4 py-2 rounded-lg bg-blue-500 text-white font-medium hover:bg-blue-600 transition"
+          >
+            Back
+          </button>
+        </div>
       </div>
     </>
   );
