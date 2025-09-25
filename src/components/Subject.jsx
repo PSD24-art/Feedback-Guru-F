@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import CreateForm from "./CreateFrom";
 import AddSubject from "./AddSubject";
 import { useParams, useNavigate } from "react-router-dom";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const Subject = () => {
   const navigate = useNavigate();
   const [clickValue, setClickValue] = useState(null);
@@ -13,14 +13,11 @@ const Subject = () => {
   useEffect(() => {
     const fetchAllLinks = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:3420/faculties/${id}/feedback`,
-          {
-            method: "GET",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const res = await fetch(`${BASE_URL}/faculties/${id}/feedback`, {
+          method: "GET",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        });
         const data = await res.json();
         console.log("Fetched:", data.links);
         setFeedbackLinks(data.links);
@@ -35,14 +32,11 @@ const Subject = () => {
   const handleDelete = async (link) => {
     const confirmed = confirm("Are you sure want to delete this form");
     if (!confirmed) return;
-    const res = await fetch(
-      `http://localhost:3420/faculties/${id}/feedback/${link}`,
-      {
-        method: "DELETE",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    const res = await fetch(`${BASE_URL}/faculties/${id}/feedback/${link}`, {
+      method: "DELETE",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
     const data = await res.json();
     console.log(data);
     setShouldFetch((prev) => !prev);

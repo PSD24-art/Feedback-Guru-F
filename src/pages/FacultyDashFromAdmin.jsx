@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const FacultyDashFromAdmin = () => {
   const { id, facultyId, subject } = useParams();
   const [count, setCount] = useState();
@@ -11,14 +11,11 @@ const FacultyDashFromAdmin = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const fetchFaculty = async () => {
-      const res = await fetch(
-        `http://localhost:3420/admin/faculties/${facultyId}`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const res = await fetch(`${BASE_URL}/admin/faculties/${facultyId}`, {
+        method: "GET",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
       const data = await res.json();
       console.log("Individual Faculty: ", data);
       setFacultyData(data.faculty);
@@ -30,7 +27,7 @@ const FacultyDashFromAdmin = () => {
     const fetchAllLinks = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3420/admin/faculties/${facultyId}/links`,
+          `${BASE_URL}/admin/faculties/${facultyId}/links`,
           {
             method: "GET",
             credentials: "include",
@@ -54,7 +51,7 @@ const FacultyDashFromAdmin = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:3420/admin/faculties/${facultyId}/feedback/${subjectId}`,
+        `${BASE_URL}/admin/faculties/${facultyId}/feedback/${subjectId}`,
         {
           method: "GET",
           credentials: "include",
@@ -72,7 +69,7 @@ const FacultyDashFromAdmin = () => {
   const handleDeleteFaculty = async () => {
     const confirmed = confirm("Really want to delete the faculty");
     if (!confirmed) return;
-    const res = await fetch(`http://localhost:3420/admin/faculties/${id}`, {
+    const res = await fetch(`${BASE_URL}/admin/faculties/${id}`, {
       method: "DELETE",
       credentials: "include",
       headers: { "Content-Type": "application/json" },

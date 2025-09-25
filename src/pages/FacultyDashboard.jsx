@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const FacultyDashboard = () => {
   const [facultyData, setFacultyData] = useState(null);
   const navigate = useNavigate();
@@ -12,14 +12,11 @@ const FacultyDashboard = () => {
   useEffect(() => {
     const fetchAllLinks = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:3420/faculties/${id}/feedback`,
-          {
-            method: "GET",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const res = await fetch(`${BASE_URL}/faculties/${id}/feedback`, {
+          method: "GET",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        });
         const data = await res.json();
         console.log("Fetched from facultyy dashboard:", data.links);
         setSubjects(data.links);
@@ -33,7 +30,7 @@ const FacultyDashboard = () => {
 
   useEffect(() => {
     const fetchFaculty = async () => {
-      const res = await fetch(`http://localhost:3420/faculties/${id}`, {
+      const res = await fetch(`${BASE_URL}/faculties/${id}`, {
         method: "GET",
         credentials: "include",
       });
@@ -56,13 +53,10 @@ const FacultyDashboard = () => {
     console.log("select option changed");
     const subjectId = document.getElementById("linkSubject").value;
     console.log(subjectId);
-    const res = await fetch(
-      `http://localhost:3420/faculties/${id}/count/${subjectId}`,
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    );
+    const res = await fetch(`${BASE_URL}/faculties/${id}/count/${subjectId}`, {
+      method: "GET",
+      credentials: "include",
+    });
     const data = await res.json();
     console.log("All feedbacks", data);
     setCount(data.FeedbackLength);

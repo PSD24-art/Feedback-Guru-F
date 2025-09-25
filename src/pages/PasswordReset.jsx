@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const PasswordReset = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -11,7 +11,7 @@ const PasswordReset = () => {
     const oldPassword = oldPassRef.current.value;
     const newPassword = newPassRef.current.value;
     try {
-      const res = await fetch(`http://localhost:3420/change-password/${id}`, {
+      const res = await fetch(`${BASE_URL}/change-password/${id}`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

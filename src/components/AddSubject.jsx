@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const AddSubject = () => {
   const { id } = useParams();
   const nameRef = useRef();
@@ -15,7 +15,7 @@ const AddSubject = () => {
     const department = deptRef.current.value;
     const semester = semesterRef.current.value;
 
-    const res = await fetch(`http://localhost:3420/faculties/${id}/subject`, {
+    const res = await fetch(`${BASE_URL}/faculties/${id}/subject`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },

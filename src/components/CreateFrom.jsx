@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const CreateForm = ({ triggerFetch }) => {
   const { id } = useParams();
   const subjectRef = useRef();
@@ -27,7 +27,7 @@ const CreateForm = ({ triggerFetch }) => {
     }
 
     // Add faculty to subject
-    await fetch(`http://localhost:3420/faculties/${id}/subject`, {
+    await fetch(`${BASE_URL}/faculties/${id}/subject`, {
       method: "PUT",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -38,7 +38,7 @@ const CreateForm = ({ triggerFetch }) => {
     console.log("foundSubjectId:", subjectId);
 
     // Add feedback link
-    const res = await fetch(`http://localhost:3420/faculties/${id}/feedback`, {
+    const res = await fetch(`${BASE_URL}/faculties/${id}/feedback`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -68,9 +68,9 @@ const CreateForm = ({ triggerFetch }) => {
 
     let url;
     if (dept && sem) {
-      url = `http://localhost:3420/faculties/${id}/subject/${dept}/${sem}`;
+      url = `${BASE_URL}/faculties/${id}/subject/${dept}/${sem}`;
     } else {
-      url = `http://localhost:3420/faculties/${id}/subject/${dept}`;
+      url = `${BASE_URL}/faculties/${id}/subject/${dept}`;
     }
 
     try {

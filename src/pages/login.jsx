@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../store/AuthProvider";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const Login = () => {
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);

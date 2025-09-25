@@ -1,7 +1,7 @@
 import useAuth from "../store/AuthProvider";
 import { useNavigate, useLocation } from "react-router-dom";
 import { LogOut } from "lucide-react";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,9 +20,9 @@ const Header = () => {
   };
 
   // Check if current path matches /faculty/:id/feedback/:subject
-  const hideButtons = /^\/faculty\/[^/]+\/feedback\/[^/]+$/.test(
-    location.pathname
-  );
+  const hideButtons =
+    /^\/faculty\/[^/]+\/feedback\/[^/]+$/.test(location.pathname) ||
+    /^\/feedback\/sent$/.test(location.pathname);
 
   return (
     <>

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const AdminDashboard = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [facultyList, setFacultyList] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch(`http://localhost:3420/admin/${id}`, {
+      const res = await fetch(`${BASE_URL}/admin/${id}`, {
         method: "GET",
         credentials: "include",
       });

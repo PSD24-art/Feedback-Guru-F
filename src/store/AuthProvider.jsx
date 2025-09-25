@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const AuthContext = createContext();
 const storedUser = JSON.parse(localStorage.getItem("user"));
 
@@ -28,7 +28,7 @@ export function AuthProvider({ children }) {
     if (storedUser) {
       const user = JSON.parse(storedUser);
 
-      fetch("http://localhost:3420/me", { credentials: "include" })
+      fetch(`${BASE_URL}/me`, { credentials: "include" })
         .then((res) => {
           if (!res.ok) throw new Error("Session invalid");
           return res.json();
@@ -42,7 +42,7 @@ export function AuthProvider({ children }) {
     }
   }, []);
   const login = async (loginDetails) => {
-    const res = await fetch("http://localhost:3420/login", {
+    const res = await fetch(`${BASE_URL}/login`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -57,7 +57,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await fetch("http://localhost:3420/logout", {
+      await fetch(`${BASE_URL}/logout`, {
         method: "GET",
         credentials: "include",
       });

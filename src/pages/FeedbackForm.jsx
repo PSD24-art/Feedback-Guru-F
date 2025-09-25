@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import questions from "../data/questions";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
 const FeedbackForm = () => {
   const [current, setCurrent] = useState(false);
   const [name, setName] = useState();
@@ -17,7 +19,7 @@ const FeedbackForm = () => {
     const fetchToken = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3420/faculties/${id}/tokens/${subject}`,
+          `${BASE_URL}/faculties/${id}/tokens/${subject}`,
           { method: "GET", headers: { "Content-Type": "application/json" } }
         );
 
@@ -50,17 +52,15 @@ const FeedbackForm = () => {
     setRoll(studentroll);
     setName(studentName);
 
-    console.log(`name: ${studentName} roll: ${studentroll}`);
-
-    const res = await fetch(`http://localhost:3420/feedback/${token}/check`, {
+    const res = await fetch(`${BASE_URL}/feedback/${token}/check`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        studentRoll: roll,
+        studentRoll: studentroll,
       }),
     });
     const data = await res.json();
-    console.log(data);
+    console.log("Backend Response", data);
     if (data.message) {
       setCurrent(true);
     } else {
@@ -71,7 +71,7 @@ const FeedbackForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(answers);
-    const res = await fetch(`http://localhost:3420/feedback/${token}`, {
+    const res = await fetch(`${BASE_URL}/feedback/${token}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -179,7 +179,7 @@ const FeedbackForm = () => {
                       value={num}
                       checked={answers[IDX] === num}
                       onChange={() => handleChange(IDX, num)}
-                      className="hidden"
+                      className="sr-only"
                     />
                     <span className="font-medium">
                       {num === 1
