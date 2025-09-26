@@ -44,7 +44,7 @@ const CreateForm = ({ triggerFetch }) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         subject: foundSubjectId,
-        link: `http://localhost:5173/faculty/${id}/feedback/${selectedCode}`,
+        link: `https://feedback-guru.onrender.com//faculty/${id}/feedback/${selectedCode}`,
       }),
     });
 
@@ -179,12 +179,12 @@ const CreateForm = ({ triggerFetch }) => {
             {/* Link */}
             <div className="whitespace-normal break-words text-blue-700 underline bg-blue-50 p-2 rounded-md">
               <a
-                href={`http://localhost:5173/faculty/${id}/feedback/${code}`}
+                href={`https://feedback-guru.onrender.com//faculty/${id}/feedback/${code}`}
                 target="_blank"
                 rel="noreferrer"
               >
                 {linkMessage ??
-                  `http://localhost:5173/faculty/${id}/feedback/${code}`}
+                  `https://feedback-guru.onrender.com//faculty/${id}/feedback/${code}`}
               </a>
             </div>
 
@@ -193,7 +193,7 @@ const CreateForm = ({ triggerFetch }) => {
               onClick={() => {
                 navigator.clipboard.writeText(
                   linkMessage ??
-                    `http://localhost:5173/faculty/${id}/feedback/${code}`
+                    `https://feedback-guru.onrender.com//faculty/${id}/feedback/${code}`
                 );
                 alert("Link copied to clipboard!");
               }}
