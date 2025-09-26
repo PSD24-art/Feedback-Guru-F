@@ -44,7 +44,7 @@ const CreateForm = ({ triggerFetch }) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         subject: foundSubjectId,
-        link: `https://feedback-guru.onrender.com//faculty/${id}/feedback/${selectedCode}`,
+        link: `${BASE_URL}/faculty/${id}/feedback/${selectedCode}`,
       }),
     });
 
@@ -101,6 +101,7 @@ const CreateForm = ({ triggerFetch }) => {
               Department
             </label>
             <select
+              required
               ref={deptRef}
               id="department"
               onChange={handleOnChange}
@@ -124,6 +125,7 @@ const CreateForm = ({ triggerFetch }) => {
               Semester
             </label>
             <select
+              required
               ref={semRef}
               id="semester"
               onChange={handleOnChange}
@@ -147,6 +149,7 @@ const CreateForm = ({ triggerFetch }) => {
               Subject
             </label>
             <select
+              required
               id="subject"
               ref={subjectRef}
               className="p-2 border-2 border-orange-300 rounded-md focus:ring-2 focus:ring-orange-400 focus:outline-none"
@@ -179,12 +182,11 @@ const CreateForm = ({ triggerFetch }) => {
             {/* Link */}
             <div className="whitespace-normal break-words text-blue-700 underline bg-blue-50 p-2 rounded-md">
               <a
-                href={`https://feedback-guru.onrender.com//faculty/${id}/feedback/${code}`}
+                href={`${BASE_URL}/faculty/${id}/feedback/${code}`}
                 target="_blank"
                 rel="noreferrer"
               >
-                {linkMessage ??
-                  `https://feedback-guru.onrender.com//faculty/${id}/feedback/${code}`}
+                {linkMessage ?? `${BASE_URL}/faculty/${id}/feedback/${code}`}
               </a>
             </div>
 
@@ -192,8 +194,7 @@ const CreateForm = ({ triggerFetch }) => {
             <button
               onClick={() => {
                 navigator.clipboard.writeText(
-                  linkMessage ??
-                    `https://feedback-guru.onrender.com//faculty/${id}/feedback/${code}`
+                  linkMessage ?? `${BASE_URL}/faculty/${id}/feedback/${code}`
                 );
                 alert("Link copied to clipboard!");
               }}
