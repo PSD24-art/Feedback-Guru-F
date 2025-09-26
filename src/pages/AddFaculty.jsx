@@ -16,7 +16,7 @@ const AddFaculty = () => {
       `You are going to add ${name} in database, click ok to confirm`
     );
     if (!confirmed) return;
-    const res = await fetch("${BASE_URL}/admin/faculties/new", {
+    const res = await fetch(`${BASE_URL}/admin/faculties/new`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -25,29 +25,69 @@ const AddFaculty = () => {
 
     const data = await res.json();
     console.log(data);
-    alert("Fsculty added successfully");
+    alert("Faculty added successfully");
     navigate(`/admin/${id}`);
   };
 
   return (
-    <div className="mt-15">
-      <form onSubmit={handleOnSubmit}>
-        <input type="text" ref={nameRef} placeholder="Faculty Full Name here" />
-        <hr />
-        <br />
-        <input type="email" ref={emailRef} placeholder="Faculty Email here" />
-        <hr />
-        <br />
-        <select ref={deptRef} id="department">
-          <option value="CS">Computer Science</option>
-          <option value="CE">Civil Engineering</option>
-          <option value="EE">Electrical Engineering</option>
-          <option value="ME">Mechanical Engineering</option>
-          <option value="EC">Electronics and Telecommunication</option>
-        </select>
-        <hr />
-        <br />
-        <button type="submit">Add Faculty</button>
+    <div className="mt-15 flex justify-center ps-3 pe-3 flex-col ">
+      <h2 className="text-xl text-center font-bold text-orange-500 mt-4 mb-2">
+        Enter Faculty Details
+      </h2>
+      <form
+        onSubmit={handleOnSubmit}
+        className="bg-white shadow-md rounded-xl p-6 w-full max-w-md space-y-6 border-1 border-amber-100"
+      >
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Faculty Name
+          </label>
+          <input
+            type="text"
+            ref={nameRef}
+            placeholder="Enter full name"
+            required
+            className="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 px-4 py-2 text-gray-800"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Faculty Email
+          </label>
+          <input
+            type="email"
+            ref={emailRef}
+            placeholder="Enter email"
+            required
+            className="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 px-4 py-2 text-gray-800"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Department
+          </label>
+          <select
+            ref={deptRef}
+            id="department"
+            required
+            className="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 px-4 py-2 text-gray-800"
+          >
+            <option value="CS">Computer Science</option>
+            <option value="CE">Civil Engineering</option>
+            <option value="EE">Electrical Engineering</option>
+            <option value="ME">Mechanical Engineering</option>
+            <option value="EC">Electronics and Telecommunication</option>
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-orange-600 text-white font-medium py-2 rounded-lg shadow hover:bg-orange-700 transition"
+        >
+          Add Faculty
+        </button>
       </form>
     </div>
   );
