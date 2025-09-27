@@ -1,5 +1,7 @@
 import { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import withLoader from "../utils/withLoader";
+import Loader from "./Loader";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const CreateForm = ({ triggerFetch }) => {
   const { id } = useParams();
@@ -11,7 +13,7 @@ const CreateForm = ({ triggerFetch }) => {
   const deptRef = useRef();
   const semRef = useRef();
   const [linkMessage, setLinkMessage] = useState(null);
-
+  const [loading, setLoading] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
     const selectedCode = subjectRef.current.value;
@@ -27,34 +29,36 @@ const CreateForm = ({ triggerFetch }) => {
     }
 
     // Add faculty to subject
-    await fetch(`${BASE_URL}/faculties/${id}/subject`, {
-      method: "PUT",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: selectedCode }),
-    });
-    console.log("selectedCode:", selectedCode);
-    console.log("subjects:", subjects);
-    console.log("foundSubjectId:", subjectId);
+    withLoader(async () => {
+      await fetch(`${BASE_URL}/faculties/${id}/subject`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: selectedCode }),
+      });
+      console.log("selectedCode:", selectedCode);
+      console.log("subjects:", subjects);
+      console.log("foundSubjectId:", subjectId);
 
-    // Add feedback link
-    const res = await fetch(`${BASE_URL}/faculties/${id}/feedback`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        subject: foundSubjectId,
-        link: `${BASE_URL}/faculty/${id}/feedback/${selectedCode}`,
-      }),
-    });
+      // Add feedback link
+      const res = await fetch(`${BASE_URL}/faculties/${id}/feedback`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subject: foundSubjectId,
+          link: `https://feedback-guru.onrender.com/faculty/${id}/feedback/${selectedCode}`,
+        }),
+      });
 
-    const data = await res.json();
-    if (data.message) {
-      setLinkMessage(data.message);
-    }
+      const data = await res.json();
+      if (data.message) {
+        setLinkMessage(data.message);
+      }
 
-    setButton(true);
-    triggerFetch();
+      setButton(true);
+      triggerFetch();
+    }, setLoading);
   };
 
   const handleOnChange = async () => {
@@ -72,22 +76,24 @@ const CreateForm = ({ triggerFetch }) => {
     } else {
       url = `${BASE_URL}/faculties/${id}/subject/${dept}`;
     }
-
-    try {
-      const res = await fetch(url, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-      const data = await res.json();
-      setSubjects(data.subjects);
-    } catch (err) {
-      console.error("Failed to fetch subjects", err);
-    }
+    withLoader(async () => {
+      try {
+        const res = await fetch(url, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        });
+        const data = await res.json();
+        setSubjects(data.subjects);
+      } catch (err) {
+        console.error("Failed to fetch subjects", err);
+      }
+    }, setLoading);
   };
 
   return (
     <>
+      {loading && <Loader />}
       {!button ? (
         <form
           onSubmit={handleSubmit}

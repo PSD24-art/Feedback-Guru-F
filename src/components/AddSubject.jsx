@@ -1,7 +1,10 @@
 import { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import withLoader from "../utils/withLoader";
+import Loader from "./Loader";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const AddSubject = () => {
+  const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const nameRef = useRef();
   const deptRef = useRef();
@@ -14,24 +17,26 @@ const AddSubject = () => {
     const code = codeRef.current.value;
     const department = deptRef.current.value;
     const semester = semesterRef.current.value;
-
-    const res = await fetch(`${BASE_URL}/faculties/${id}/subject`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, code, department, semester }),
-    });
-    const data = await res.json();
-    console.log(data);
-    if (data.message) {
-      setMessage(data.message);
-    } else if (data.error) {
-      setMessage(data.error);
-    }
+    withLoader(async () => {
+      const res = await fetch(`${BASE_URL}/faculties/${id}/subject`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, code, department, semester }),
+      });
+      const data = await res.json();
+      console.log(data);
+      if (data.message) {
+        setMessage(data.message);
+      } else if (data.error) {
+        setMessage(data.error);
+      }
+    }, setLoading);
   };
 
   return (
     <>
+      {loading && <Loader />}
       <h2 className="mb-4 text-xl font-semibold text-orange-600">
         Add Subject
       </h2>

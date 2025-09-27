@@ -48,7 +48,10 @@ export function AuthProvider({ children }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(loginDetails),
     });
-    if (!res.ok) return console.log("Login Failed");
+    if (!res.ok) {
+      const data = await res.json();
+      return console.log("Invalid Username or Password", data);
+    }
     const data = await res.json();
     dispatch({ type: "LOGIN", payload: data.user });
     console.log(data);

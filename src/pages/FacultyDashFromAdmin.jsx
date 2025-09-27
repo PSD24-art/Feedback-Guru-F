@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import withLoader from "../utils/withLoader";
+import Loader from "../components/Loader";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const FacultyDashFromAdmin = () => {
   const { id, facultyId, subject } = useParams();
@@ -9,6 +11,7 @@ const FacultyDashFromAdmin = () => {
   const [facultyData, setFacultyData] = useState();
   const [subjects, setSubjects] = useState();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const fetchFaculty = async () => {
       const res = await fetch(`${BASE_URL}/admin/faculties/${facultyId}`, {
@@ -24,7 +27,7 @@ const FacultyDashFromAdmin = () => {
   }, []);
 
   useEffect(() => {
-    const fetchAllLinks = async () => {
+    withLoader(async () => {
       try {
         const res = await fetch(
           `${BASE_URL}/admin/faculties/${facultyId}/links`,
@@ -40,8 +43,7 @@ const FacultyDashFromAdmin = () => {
       } catch (err) {
         console.error("Failed to fetch links", err);
       }
-    };
-    fetchAllLinks();
+    }, setLoading);
   }, []);
 
   const handleOnChange = async () => {
@@ -69,17 +71,20 @@ const FacultyDashFromAdmin = () => {
   const handleDeleteFaculty = async () => {
     const confirmed = confirm("Really want to delete the faculty");
     if (!confirmed) return;
-    const res = await fetch(`${BASE_URL}/admin/faculties/${id}`, {
-      method: "DELETE",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-    });
-    const data = await res.json();
-    alert(data.message);
-    navigate(`/admin/${id}`);
+    withLoader(async () => {
+      const res = await fetch(`${BASE_URL}/admin/faculties/${facultyId}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+      alert(data.message);
+      navigate(`/admin/${id}`);
+    }, setLoading);
   };
   return (
     <>
+      {loading && <Loader />}
       {facultyData && (
         <h2 className="mt-6 text-2xl font-cursive text-orange-600 font-bold text-center">
           {facultyData.name}

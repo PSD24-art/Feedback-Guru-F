@@ -125,7 +125,7 @@ const FacultyDashboard = () => {
               <div className="flex justify-center">
                 <button
                   onClick={handleOnClick}
-                  className="px-4 py-2 rounded-lg bg-orange-500 text-white font-medium hover:bg-orange-600 transition"
+                  className="hover:cursor-pointer px-4 py-2 rounded-lg bg-orange-500 text-white font-medium hover:bg-orange-600 transition"
                 >
                   Feedback Form
                 </button>

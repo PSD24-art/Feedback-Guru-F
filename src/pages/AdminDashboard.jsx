@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
+import withLoader from "../utils/withLoader";
+import Loader from "../components/Loader";
 const AdminDashboard = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [facultyList, setFacultyList] = useState([]);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
-    const fetchData = async () => {
+    withLoader(async () => {
       const res = await fetch(`${BASE_URL}/admin/${id}`, {
         method: "GET",
         credentials: "include",
@@ -18,8 +21,7 @@ const AdminDashboard = () => {
       if (!data.admin.isPasswordSet) {
         navigate(`/change-password/${id}`);
       }
-    };
-    fetchData();
+    }, setLoading);
   }, []);
 
   const handleOnClick = (facultyId) => {
@@ -33,6 +35,7 @@ const AdminDashboard = () => {
   };
   return (
     <>
+      {loading && <Loader />}
       <div className="mt-10 p-6">
         {/* Title */}
         <h2 className="text-xl mt-3 font-cursive text-center pb-2 text-orange-600 font-bold mb-6 border-b-2">
@@ -71,7 +74,7 @@ const AdminDashboard = () => {
               {/* Action Button */}
               <button
                 onClick={() => handleOnClick(faculty._id)}
-                className="flex hover:bg-gray-100 rounded-e-xl h-full justify-center items-center text-orange-500 hover:text-orange-700 transition"
+                className="hover:cursor-pointer flex hover:bg-gray-100 rounded-e-xl h-full justify-center items-center text-orange-500 hover:text-orange-700 transition"
                 title="View Faculty"
               >
                 <ArrowRight className="w-6 h-6" />
@@ -84,7 +87,7 @@ const AdminDashboard = () => {
         <div className="flex justify-center">
           <button
             onClick={handleAddFacultyClick}
-            className="bg-orange-500 text-white font-semibold py-2 px-6 rounded-lg shadow-md hover:bg-orange-600 transition"
+            className="hover:cursor-pointer bg-orange-500 text-white font-semibold py-2 px-6 rounded-lg shadow-md hover:bg-orange-600 transition"
           >
             Add Faculty
           </button>

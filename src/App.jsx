@@ -21,7 +21,7 @@ function App() {
         <Route path="/faculty/:id" element={<FacultyDashboard />} />
         <Route path="/change-password/:id" element={<PasswordReset />} />
         <Route path="/faculty/:id/form" element={<Subject />} />
-
+.
         <Route
           path="/faculty/:id/feedback/:subject"
           element={<FeedbackForm />}
