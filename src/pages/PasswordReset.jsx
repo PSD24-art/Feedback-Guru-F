@@ -1,7 +1,9 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
+import withLoader from "../utils/withLoader";
 const PasswordReset = () => {
+  const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
   const oldPassRef = useRef();
@@ -10,28 +12,31 @@ const PasswordReset = () => {
     e.preventDefault();
     const oldPassword = oldPassRef.current.value;
     const newPassword = newPassRef.current.value;
-    try {
-      const res = await fetch(`${BASE_URL}/change-password/${id}`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ oldPassword, newPassword }),
-      });
-      const data = await res.json();
-      console.log(data);
-      alert("Password changed successfully");
-      if (data.role === "admin") {
-        navigate(`/admin/${id}`);
-      } else if (data.role === "faculty") {
-        navigate(`/faculty/${id}`);
+    withLoader(async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/change-password/${id}`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ oldPassword, newPassword }),
+        });
+        const data = await res.json();
+        console.log(data);
+        alert("Password changed successfully");
+        if (data.role === "admin") {
+          navigate(`/admin/${id}`);
+        } else if (data.role === "faculty") {
+          navigate(`/faculty/${id}`);
+        }
+      } catch (e) {
+        console.log(e.message);
       }
-    } catch (e) {
-      console.log(e.message);
-    }
+    }, setLoading);
   };
 
   return (
     <>
+      {loading && <Loader />}
       <div className="mt-12 max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 border border-orange-200">
         <h2 className="text-2xl font-bold text-center text-orange-600 mb-6">
           Reset Password

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import withLoader from "../utils/withLoader";
+import Loader from "../components/Loader";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const FacultyDashboard = () => {
   const [facultyData, setFacultyData] = useState(null);
@@ -8,9 +10,9 @@ const FacultyDashboard = () => {
   const { id } = useParams();
   const [subjects, setSubjects] = useState([]);
   const [count, setCount] = useState(0);
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
-    const fetchAllLinks = async () => {
+    withLoader(async () => {
       try {
         const res = await fetch(`${BASE_URL}/faculties/${id}/feedback`, {
           method: "GET",
@@ -23,13 +25,11 @@ const FacultyDashboard = () => {
       } catch (err) {
         console.error("Failed to fetch links", err);
       }
-    };
-
-    fetchAllLinks();
+    }, setLoading);
   }, []);
 
   useEffect(() => {
-    const fetchFaculty = async () => {
+    withLoader(async () => {
       const res = await fetch(`${BASE_URL}/faculties/${id}`, {
         method: "GET",
         credentials: "include",
@@ -40,9 +40,7 @@ const FacultyDashboard = () => {
       if (!data.faculty.isPasswordSet) {
         navigate(`/change-password/${id}`);
       }
-    };
-
-    fetchFaculty();
+    }, setLoading);
   }, []);
 
   const handleOnClick = () => {
@@ -53,17 +51,23 @@ const FacultyDashboard = () => {
     console.log("select option changed");
     const subjectId = document.getElementById("linkSubject").value;
     console.log(subjectId);
-    const res = await fetch(`${BASE_URL}/faculties/${id}/count/${subjectId}`, {
-      method: "GET",
-      credentials: "include",
-    });
-    const data = await res.json();
-    console.log("All feedbacks", data);
-    setCount(data.FeedbackLength);
+    withLoader(async () => {
+      const res = await fetch(
+        `${BASE_URL}/faculties/${id}/count/${subjectId}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+      const data = await res.json();
+      console.log("All feedbacks", data);
+      setCount(data.FeedbackLength);
+    }, setLoading);
   };
 
   return (
     <>
+      {loading && <Loader />}
       <div className="mt-16 ps-2 pe-2">
         {facultyData && (
           <h2 className="text-2xl font-bold text-orange-600 mb-6">

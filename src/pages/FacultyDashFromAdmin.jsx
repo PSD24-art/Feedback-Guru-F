@@ -13,7 +13,7 @@ const FacultyDashFromAdmin = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-    const fetchFaculty = async () => {
+    withLoader(async () => {
       const res = await fetch(`${BASE_URL}/admin/faculties/${facultyId}`, {
         method: "GET",
         credentials: "include",
@@ -22,8 +22,7 @@ const FacultyDashFromAdmin = () => {
       const data = await res.json();
       console.log("Individual Faculty: ", data);
       setFacultyData(data.faculty);
-    };
-    fetchFaculty();
+    }, setLoading);
   }, []);
 
   useEffect(() => {
@@ -50,22 +49,23 @@ const FacultyDashFromAdmin = () => {
     console.log("select option changed");
     const subjectId = document.getElementById("linkSubject").value;
     console.log(subjectId);
-
-    try {
-      const res = await fetch(
-        `${BASE_URL}/admin/faculties/${facultyId}/feedback/${subjectId}`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      const data = await res.json();
-      console.log("Feedbacks: ", data);
-      setCount(data.FeedbackLength);
-    } catch (e) {
-      console.log(e.message);
-    }
+    withLoader(async () => {
+      try {
+        const res = await fetch(
+          `${BASE_URL}/admin/faculties/${facultyId}/feedback/${subjectId}`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        const data = await res.json();
+        console.log("Feedbacks: ", data);
+        setCount(data.FeedbackLength);
+      } catch (e) {
+        console.log(e.message);
+      }
+    }, setLoading);
   };
 
   const handleDeleteFaculty = async () => {
