@@ -17,6 +17,8 @@ const Login = () => {
       withLoader(async () => {
         const data = await login({ username, password });
         const id = data.user.id;
+        console.log("Base URL →", import.meta.env.VITE_BASE_URL);
+
         if (data.user.role === "admin") {
           navigate(`/admin/${id}`);
         }
