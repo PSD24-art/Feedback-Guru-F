@@ -1,5 +1,10 @@
 {
   "redirects": [
-    { "source": "/**", "destination": "/index.html", "status": 200 }
+    {
+      "source": "/api/*",
+      "destination": "https://feedback-guru-b.onrender.com/api/:splat",
+      "action": "rewrite"
+    },
+    { "source": "/*", "destination": "/index.html", "action": "rewrite" }
   ]
 }
